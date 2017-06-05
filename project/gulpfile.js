@@ -8,6 +8,7 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 var minify = require('gulp-minify-css');
+var rjs = require('gulp-requirejs');
 var browserSync = require("browser-sync");
 reload = browserSync.reload;
 
@@ -22,8 +23,8 @@ var config = {
 gulp.task('build:js', function()
 {
     gulp.src('src/js/**/*.js')
-        .pipe(uglify())
-        .pipe(concat('main.js'))
+        //.pipe(uglify())
+        //.pipe(concat('main.js'))
         .pipe(gulp.dest('build/js'))
         .pipe(reload({stream: true}));
 });
@@ -67,6 +68,15 @@ gulp.task('build:json', function()
     gulp.src('src/*.json')
         .pipe(gulp.dest('build'))
         .pipe(reload({stream:true}));
+});
+
+gulp.task('rjsb', function() {
+    return rjs(
+        {
+            baseUrl: 'src/js/init.js',
+            out: 'rjsmain.js'
+        })
+        .pipe(gulp.dest('build/js'));
 });
 
 gulp.task('build', ['build:html', 'build:js', 'build:css', 'build:json']);

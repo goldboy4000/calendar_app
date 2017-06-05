@@ -3,28 +3,25 @@
   "version": "1.0.0",
   "description": "calendar application",
   "main": "index.html",
-  "scripts":
-  {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords":
-  [
+  "keywords": [
     "calendar"
   ],
   "author": "LaBestia",
   "license": "ISC",
-  "devDependencies":
-  {
+  "devDependencies": {
     "browser-sync": "^2.18.8",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-minify-css": "^1.2.4",
+    "gulp-requirejs": "^1.0.0-rc2",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11"
   },
-  "dependencies":
-  {
+  "dependencies": {
     "bulma": "^0.4.1"
   }
 }

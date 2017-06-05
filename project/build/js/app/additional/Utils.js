@@ -2,7 +2,7 @@
  * Created by LaBestia on 02.06.2017.
  */
 
-(function (window)
+define(function ()
 {
     /**
      *
@@ -151,6 +151,6 @@
         return option;
     };
 
-    window.utils = new Utils();
+    return new Utils();
 
-})(window);
+});

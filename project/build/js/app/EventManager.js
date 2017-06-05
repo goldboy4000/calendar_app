@@ -2,7 +2,7 @@
  * Created by LaBestia on 01.06.2017.
  */
 
-(function (window)
+define(function ()
 {
     /**
      *
@@ -54,6 +54,5 @@
 
     };
 
-    window.eventManager = new EventManager();
-
-})(window);
+    return new EventManager();
+});

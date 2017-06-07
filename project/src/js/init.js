@@ -13,7 +13,9 @@
         requirejs.config({
             baseUrl: 'js/app',
             paths: {
-                app: 'main'
+                app: 'main',
+                underscore: '../libs/underscore',
+                text: '../libs/text'
             }
         });
 

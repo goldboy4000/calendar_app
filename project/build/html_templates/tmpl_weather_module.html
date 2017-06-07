@@ -1,0 +1,26 @@
+<div>
+    <% if (forecasts.length === 1) { %>
+        <div id="link-container">
+            <a class="button is-link is-small" id="forecast-three-days">на три дня</a>
+        </div>
+    <% } %>
+    <div id="delete-container">
+        <button class="delete is-small" id="close-weather"></button>
+    </div>
+</div>
+<% forecasts.map(function(forecast, index)
+   {
+%>
+    <article class="media">
+        <div class="media-left">
+            <figure class="image is-64x64">
+                <img src="<%= forecast.image %>" alt="Image">
+            </figure>
+        </div>
+        <div class="media-content">
+            <div class="content">
+                <span><%= forecast.temperature %></span> <span><%= forecast.city %></span><br><span><%= forecast.description %></span>
+            </div>
+        </div>
+    </article>
+<% }); %>

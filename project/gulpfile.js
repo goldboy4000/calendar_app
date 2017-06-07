@@ -58,7 +58,7 @@ gulp.task('build:css', function()
 
 gulp.task('build:html', function()
 {
-    gulp.src('src/*.html')
+    gulp.src('src/**/*.html')
         .pipe(gulp.dest('build'))
         .pipe(reload({stream: true}));
 });
@@ -83,7 +83,7 @@ gulp.task('build', ['build:html', 'build:js', 'build:css', 'build:json']);
 
 gulp.task('watch', function()
 {
-    watch('src/*.html', function ()
+    watch('src/**/*.html', function ()
     {
         gulp.start('build:html');
     });

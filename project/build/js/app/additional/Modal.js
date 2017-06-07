@@ -2,7 +2,9 @@
  * Created by LaBestia on 02.06.2017.
  */
 
-define(['EventManager'], function (eventManager)
+define(['EventManager',
+        'text!../../../html_templates/tmpl_modal_window.html'],
+        function (eventManager, htmlStr)
 {
     /**
      *
@@ -11,7 +13,10 @@ define(['EventManager'], function (eventManager)
      */
     function Modal (selector)
     {
-        this.modal = document.querySelector(selector);
+        var container = document.querySelector(selector);
+
+        this.modal = this.createInstance(htmlStr);
+        container.appendChild(this.modal);
 
         this.init();
     }
@@ -33,6 +38,17 @@ define(['EventManager'], function (eventManager)
     {
         this.modal.addEventListener('click', this.modalClickHandler.bind(this));
         this.modal.addEventListener('keyup', this.modalKeyUpHandler.bind(this));
+    };
+
+    /**
+     * Creates element from string
+     */
+    Modal.prototype.createInstance = function (htmlStr)
+    {
+        var tempEl = document.createElement('div');
+        tempEl.innerHTML = htmlStr;
+
+        return tempEl.firstChild;
     };
 
     /**

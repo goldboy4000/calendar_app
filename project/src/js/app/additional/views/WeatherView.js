@@ -2,7 +2,10 @@
  * Created by LaBestia on 02.06.2017.
  */
 
-define(['EventManager'], function (eventManager)
+define(['EventManager',
+        'underscore',
+        'text!../../../../html_templates/tmpl_weather_module.html'],
+        function (eventManager, _, htmlStr)
 {
     /**
      *
@@ -21,6 +24,11 @@ define(['EventManager'], function (eventManager)
          * @type {Element}
          */
         this.element = document.querySelector('#weather-box');
+
+        /**
+         *
+         */
+        this.tmpl = _.template(htmlStr);
 
         this.init();
     }
@@ -47,14 +55,13 @@ define(['EventManager'], function (eventManager)
      */
     WeatherView.prototype.render = function(jsonObj)
     {
+        var forecastArray = [];
         if (!jsonObj.list)
         {
-            this.element.appendChild(this.renderForecast(this.getForecastObject(jsonObj)));
+            forecastArray.push(this.getForecastObject(jsonObj));
         }
         else
         {
-            this.element.removeChild(this.element.querySelector('.media'));
-
             var today = new Date();
             var counter = 0;
 
@@ -65,71 +72,18 @@ define(['EventManager'], function (eventManager)
                 var forecastDate = new Date(forecast.dt_txt);
                 if (today.getHours() > 12 && !counter)
                 {
-                    this.element.appendChild(this.renderForecast(this.getForecastObject(forecast)));
+                    forecastArray.push(this.getForecastObject(forecast));
                     counter++;
                 }
                 if (forecastDate.getHours() === 12 && counter < 3)
                 {
-                    this.element.appendChild(this.renderForecast(this.getForecastObject(forecast)));
+                    forecastArray.push(this.getForecastObject(forecast));
                     counter++;
                 }
             }.bind(this));
+
         }
-    };
-
-    /**
-     *
-     * @param forecastObj
-     * @returns {Element}
-     */
-    WeatherView.prototype.renderForecast = function(forecastObj)
-    {
-        // image
-        var img = document.createElement('img');
-        img.src = forecastObj.image;
-        img.alt = 'Image';
-
-        var image = document.createElement('figure');
-        image.className = 'image is-64x64';
-        image.appendChild(img);
-
-        var imageContainer = document.createElement('div');
-        imageContainer.className = 'media-left';
-        imageContainer.appendChild(image);
-
-        // content
-        var temperature = document.createElement('span');
-        temperature.innerHTML = forecastObj.temperature;
-
-        var city = document.createElement('span');
-        city.innerHTML = forecastObj.city;
-
-        var description = document.createElement('span');
-        description.innerHTML = forecastObj.description;
-
-        var br = document.createElement('br');
-
-        var text = document.createTextNode(' ');
-
-        var content = document.createElement('div');
-        content.className = 'content';
-        content.appendChild(temperature);
-        content.appendChild(text);
-        content.appendChild(city);
-        content.appendChild(br);
-        content.appendChild(description);
-
-        var contentContainer = document.createElement('div');
-        contentContainer.className = 'media-content';
-        contentContainer.appendChild(content);
-
-        // article
-        var forecastArticle = document.createElement('article');
-        forecastArticle.className = 'media';
-        forecastArticle.appendChild(imageContainer);
-        forecastArticle.appendChild(contentContainer);
-
-        return forecastArticle;
+        this.element.innerHTML = this.tmpl({forecasts: forecastArray});
     };
 
     /**

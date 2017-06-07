@@ -44,7 +44,7 @@ define(['EventManager', 'additional/Task', 'additional/Utils', 'additional/Modal
          *
          * @type {Modal}
          */
-        this.modal = new Modal('.modal');
+        this.modal = new Modal(this.calendarContainer);
 
         this.init();
     }

@@ -31,6 +31,7 @@ define(['additional/models/MenuModel',
         this.changeLocalizationHandler = this.changeLocalization.bind(this);
         this.localizationLoadHandler = this.localizationLoad.bind(this);
         this.menuLangChangeHandler = this.menuLangChange.bind(this);
+        this.userStateChangeHandler = this.userStateChange.bind(this);
 
         return this;
     };
@@ -44,17 +45,18 @@ define(['additional/models/MenuModel',
         eventManager.subscribe('change_lang', this.changeLocalizationHandler);
         eventManager.subscribe('localization_load', this.localizationLoadHandler);
         eventManager.subscribe('menu_lang_change', this.menuLangChangeHandler);
+        eventManager.subscribe('user_state_change', this.userStateChangeHandler);
 
         return this;
     };
 
     /**
      *
-     * @param index
+     * @param indexes
      */
-    MenuController.prototype.changeSelected = function(index)
+    MenuController.prototype.changeSelected = function(indexes)
     {
-        this.model.setSelectedMonth(index);
+        this.model.setSelected(indexes);
     };
 
     /**
@@ -81,6 +83,14 @@ define(['additional/models/MenuModel',
     MenuController.prototype.menuLangChange = function()
     {
         this.view.fillMonthSelector();
+    };
+
+    /**
+     *
+     */
+    MenuController.prototype.userStateChange = function(userData)
+    {
+        this.view.render();
     };
 
     return MenuController;

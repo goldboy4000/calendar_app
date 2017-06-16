@@ -2,18 +2,15 @@
  * Created by LaBestia on 01.06.2017.
  */
 
-define(['EventManager', 'additional/Utils'], function (eventManager, utils)
+define(['fb', 'EventManager', 'underscore', 'additional/Utils', 'text!../../../../html_templates/tmpl_main_menu.html'], function (fb, eventManager, _, utils, htmlStr)
 {
     /**
      *
      * @param model
      * @param selector
-     * @param buttonId
-     * @param monthSelectorId
-     * @param yearSelectorId
      * @constructor
      */
-    function MenuView(model, selector, buttonId, monthSelectorId, yearSelectorId)
+    function MenuView(model, selector)
     {
         this.model = model;
 
@@ -21,9 +18,11 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
 
         this.el = document.querySelector(this.selector);
 
-        this.buttonId = buttonId;
-        this.monthSelectorId = monthSelectorId;
-        this.yearSelectorId = yearSelectorId;
+        this.tmpl = _.template(htmlStr);
+
+        this.buttonId = 'show-button';
+        this.monthSelectorId = 'month-selector';
+        this.yearSelectorId = 'year-selector';
 
         this.init().render();
     }
@@ -33,7 +32,7 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
      */
     MenuView.prototype.init = function()
     {
-        this.el.addEventListener('click', this.showButtonClickHandler.bind(this));
+        this.el.addEventListener('click', this.clickHandler.bind(this));
         this.el.addEventListener('change', this.selectorChangeHandler.bind(this));
 
         return this;
@@ -52,8 +51,23 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
         {
             element.appendChild( utils.getOption(month, this.model.namesOfMonths[month]) );
         }
-
         element.selectedIndex = this.model.selectedMonth;
+    };
+
+    /**
+     *
+     */
+    MenuView.prototype.fillYearSelector = function ()
+    {
+        var element = document.getElementById(this.yearSelectorId);
+        element.innerHTML = '';
+        element.appendChild( utils.getOption(-1, '-choose year-') );
+
+        for (var year = new Date().getFullYear(); year >= 1900; year--)
+        {
+            element.appendChild( utils.getOption(year, year) );
+        }
+        element.selectedIndex = this.model.selectedYear;
     };
 
     /**
@@ -66,60 +80,14 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
 
         if (this.model.localization === 'ru')
         {
-            ruLangButton.classList.add('is-outlined');
-            enLangButton.classList.remove('is-outlined');
+            ruLangButton.classList.add('is-active');
+            enLangButton.classList.remove('is-active');
         }
         else
         {
-            ruLangButton.classList.remove('is-outlined');
-            enLangButton.classList.add('is-outlined');
+            ruLangButton.classList.remove('is-active');
+            enLangButton.classList.add('is-active');
         }
-    };
-
-    /**
-     *
-     */
-    MenuView.prototype.renderButton = function ()
-    {
-        var showButton = utils.getSimpleButton(this.buttonId, 'Show', 'is-primary');
-        showButton.setAttribute('disabled', '');
-
-        this.el.appendChild(showButton);
-    };
-
-    /**
-     *
-     */
-    MenuView.prototype.renderSelectors = function ()
-    {
-        var monthsSelector = utils.getSelector(this.monthSelectorId);
-        this.el.appendChild(monthsSelector);
-        this.fillMonthSelector();
-
-        var yearSelector = utils.getSelector(this.yearSelectorId);
-        yearSelector.appendChild( utils.getOption(-1, '-choose year-') );
-
-        for (var year = new Date().getFullYear(); year >= 1900; year--)
-        {
-            yearSelector.appendChild( utils.getOption(year, year) );
-        }
-        this.el.appendChild(yearSelector);
-    };
-
-    /**
-     *
-     */
-    MenuView.prototype.renderLocalizationMenu = function ()
-    {
-        var ruLangButton = utils.getSimpleButton('ru-lang-button', 'ru', 'is-info');
-        ruLangButton.addEventListener('click', this.locClickHandler.bind(this));
-        var enLangButton = utils.getSimpleButton('en-lang-button', 'en', 'is-info');
-        enLangButton.addEventListener('click', this.locClickHandler.bind(this));
-
-        this.el.appendChild(ruLangButton);
-        this.el.appendChild(enLangButton);
-
-        this.toggleLocButtons();
     };
 
     /**
@@ -128,20 +96,21 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
     MenuView.prototype.render = function ()
     {
         this.el.innerHTML = '';
+        this.el.innerHTML = this.tmpl({user: fb.getUserIsAuth()});
 
-        this.renderButton();
-        this.renderSelectors();
-        this.renderLocalizationMenu();
+        this.fillMonthSelector();
+        this.fillYearSelector();
     };
 
     /**
      *
      * @param e
      */
-    MenuView.prototype.showButtonClickHandler = function(e)
+    MenuView.prototype.clickHandler = function(e)
     {
         var target = e.target;
 
+        // show button
         if (target.id === this.buttonId && !target.hasAttribute('disabled'))
         {
             var monthSelector = document.getElementById(this.monthSelectorId);
@@ -151,6 +120,26 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
                 month: monthSelector[monthSelector.selectedIndex].value,
                 year: yearSelector[yearSelector.selectedIndex].value
             });
+        }
+
+        // lang buttons
+        if (target.id.indexOf('lang-button') !== -1)
+        {
+            eventManager.dispatch('change_lang', target.id.slice(0, 2));
+
+            this.toggleLocButtons();
+        }
+
+        // sign in
+        if (target.classList.contains('sign-in'))
+        {
+            fb.signIn();
+        }
+
+        // sign out
+        if (target.classList.contains('sign-out'))
+        {
+            fb.signOut();
         }
     };
 
@@ -164,7 +153,7 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
         var monthSelector = document.getElementById(this.monthSelectorId);
         var yearSelector = document.getElementById(this.yearSelectorId);
 
-        eventManager.dispatch('change_selected', monthSelector.selectedIndex);
+        eventManager.dispatch('change_selected', {month: monthSelector.selectedIndex, year: yearSelector.selectedIndex});
 
         if (monthSelector.selectedIndex !== 0 && yearSelector.selectedIndex !== 0)
         {
@@ -174,17 +163,6 @@ define(['EventManager', 'additional/Utils'], function (eventManager, utils)
         {
             showButton.setAttribute('disabled', '');
         }
-    };
-
-    /**
-     *
-     * @param e
-     */
-    MenuView.prototype.locClickHandler = function(e)
-    {
-        eventManager.dispatch('change_lang', e.target.id.slice(0, 2));
-
-        this.toggleLocButtons();
     };
 
     return MenuView;

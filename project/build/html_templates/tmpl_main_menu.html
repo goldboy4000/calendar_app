@@ -1,0 +1,51 @@
+<div class="container">
+
+    <div class="nav-left">
+        <div class="nav-item">
+            <a class="button is-primary" id="show-button" disabled="">Show</a>
+            <select class="select" id="month-selector">
+                <option value="-1">-choose month-</option>
+            </select>
+            <select class="select" id="year-selector">
+                <option value="-1">-choose year-</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="nav-center">
+        <div class="nav-item">
+            <a class="nav-item is-tab is-active" id="ru-lang-button">RU</a>
+            <a class="nav-item is-tab" id="en-lang-button">EN</a>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <div class="nav-item">
+            <div class="field is-grouped">
+                <% if (!user) { %>
+                    <p class="control">
+                        <a class="button sign-in">
+                            <span class="icon sign-in">
+                                <i class="fa fa-sign-in sign-in"></i>
+                            </span>
+                            <span class="sign-in">Sign In</span>
+                        </a>
+                    </p>
+                <% } else { %>
+                    <p class="control">
+                        <a class="nav-item is-tab"><%= user.displayName%></a>
+                    </p>
+                    <p class="control">
+                        <a class="button sign-out is-primary" >
+                            <span class="icon sign-out">
+                                <i class="fa fa-sign-out sign-out"></i>
+                            </span>
+                            <span class="sign-out">Sign Out</span>
+                        </a>
+                    </p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+</div>

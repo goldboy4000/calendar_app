@@ -113,6 +113,7 @@ define(function ()
     Utils.prototype.getSelector = function(id)
     {
         var selector = document.createElement('select');
+        selector.className = 'select';
         selector.setAttribute('id', id);
 
         return selector;

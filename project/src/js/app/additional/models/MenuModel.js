@@ -24,15 +24,26 @@ define(['EventManager'], function (eventManager)
         this.localization = 'ru';
 
         this.selectedMonth = 0;
+        this.selectedYear = 0;
     }
+
+    /**
+     *
+     * @param indexes
+     */
+    MenuModel.prototype.setSelected = function(indexes)
+    {
+        this.selectedMonth = indexes.month;
+        this.selectedYear = indexes.year;
+    };
 
     /**
      *
      * @param index
      */
-    MenuModel.prototype.setSelectedMonth = function(index)
+    MenuModel.prototype.setSelectedYear = function(index)
     {
-        this.selectedMonth = index;
+        this.selectedYear = index;
     };
 
     /**

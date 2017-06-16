@@ -6,18 +6,22 @@ define(['additional/controllers/CalendarController',
         'additional/controllers/MenuController',
         'additional/controllers/WeatherController',
         'additional/LocalizationLoader',
-        'EventManager'
-        ], function (CalendarController, MenuController, WeatherController, LocalizationLoader, eventManager)
+        'EventManager',
+        'fb'
+        ], function (CalendarController, MenuController, WeatherController, LocalizationLoader, eventManager, fb)
 {
     return {
 
         init: function ()
         {
+            fb.init();
+
             new LocalizationLoader('data.json');
 
-            new WeatherController('Minsk', 'by', 'metric', 'ru');
+            // нет возможности использовать API по протоколу https
+            //new WeatherController('Minsk', 'by', 'metric', 'ru');
 
-            new MenuController('#menu_container', 'show-button', 'month-selector', 'year-selector');
+            new MenuController('#menu_container');
 
             new CalendarController('#calendar_nav_container', '#calendar_container');
 

@@ -12,45 +12,93 @@ define(['firebase', 'module', 'EventManager'], function (firebase, module, event
          */
         init: function ()
         {
-            this.userIsAuth = null;
             firebase.initializeApp(module.config());
+
+            this.userIsAuth = firebase.auth().currentUser || null;
+
+            this.setupEvents();
         },
 
         /**
          *
          */
-        signIn: function ()
+        setupEvents: function () {
+
+            firebase.auth().onAuthStateChanged(function(user) {
+
+                // if (user) {
+                //
+                //     var ref = firebase.database().ref('users/' + user.uid + '/tasks/');
+                //     ref.on('value', function(snapshot)
+                //     {
+                //         radio.trigger('value_changed', snapshot.val());
+                //     });
+                //
+                //     console.log('onAuth true');
+                //     // User is signed in.
+                // } else {
+                //     console.log('onAuth false');
+                //     // No user is signed in.
+                // }
+
+                this.setUserIsAuth(user);
+
+            }.bind(this));
+
+        },
+
+        /**
+         *
+         */
+        signInByEmail: function (email, password)
+        {
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .catch(function(error)
+                {
+                    var errorCode = error.code;
+
+                    if (errorCode === 'auth/user-not-found')
+                    {
+                        eventManager.dispatch('user_not_found');
+                    }
+            });
+        },
+
+        /**
+         *
+         * @param email
+         * @param password
+         */
+        signUpByEmail: function (email, password)
+        {
+            firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error)
+            {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+
+                console.log('code: ' + errorCode + ', message: ' + errorMessage);
+            });
+        },
+
+        /**
+         *
+         */
+        signInByGoogle: function ()
         {
             var provider = new firebase.auth.GoogleAuthProvider();
 
             firebase.auth().signInWithPopup(provider)
                 .then(function(result)
                 {
-                    // This gives you a Google Access Token. You can use it to access the Google API.
-                    var token = result.credential.accessToken;
-                    // The signed-in user info.
-                    var user = result.user;
-                    // ...
-                    this.userIsAuth = user;
+                    this.userIsAuth = result.user;
+                    this.setUserIsAuth(this.userIsAuth);
 
-                    eventManager.dispatch('user_state_change', this.userIsAuth);
-
-                }.bind(this)).catch(function(error)
-            {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-                // ...
-
-                console.log('error: ' + errorMessage);
-            });
-
-            // console.log(user);
-
+                }.bind(this))
+                .catch(function(error)
+                {
+                    var errorMessage = error.message;
+                    console.log('error: ' + errorMessage);
+                });
         },
 
         /**
@@ -61,14 +109,12 @@ define(['firebase', 'module', 'EventManager'], function (firebase, module, event
             firebase.auth().signOut()
                 .then(function()
                 {
-                    // Sign-out successful.
                     this.userIsAuth = null;
-                    eventManager.dispatch('user_state_change', this.userIsAuth);
+                    this.setUserIsAuth(this.userIsAuth);
                 }.bind(this))
                 .catch(function(error)
                 {
                     console.log('sign out error: ' + error);
-                    // An error happened.
                 });
         },
 
@@ -79,6 +125,16 @@ define(['firebase', 'module', 'EventManager'], function (firebase, module, event
         getUserIsAuth: function()
         {
             return this.userIsAuth;
+        },
+
+        /**
+         *
+         * @param user
+         */
+        setUserIsAuth: function (user)
+        {
+            this.userIsAuth = user;
+            eventManager.dispatch('user_state_change', user);
         }
     }
 });

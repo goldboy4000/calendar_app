@@ -2,7 +2,12 @@
  * Created by LaBestia on 01.06.2017.
  */
 
-define(['fb', 'EventManager', 'underscore', 'additional/Utils', 'text!../../../../html_templates/tmpl_main_menu.html'], function (fb, eventManager, _, utils, htmlStr)
+define(['fb',
+        'EventManager',
+        'underscore',
+        'additional/Utils',
+        'additional/SignInWindow',
+        'text!../../../../html_templates/tmpl_main_menu.html'], function (fb, eventManager, _, utils, SignInWindow, htmlStr)
 {
     /**
      *
@@ -23,6 +28,8 @@ define(['fb', 'EventManager', 'underscore', 'additional/Utils', 'text!../../../.
         this.buttonId = 'show-button';
         this.monthSelectorId = 'month-selector';
         this.yearSelectorId = 'year-selector';
+
+        this.signInWindow = new SignInWindow();
 
         this.init().render();
     }
@@ -133,7 +140,13 @@ define(['fb', 'EventManager', 'underscore', 'additional/Utils', 'text!../../../.
         // sign in
         if (target.classList.contains('sign-in'))
         {
-            fb.signIn();
+            this.signInWindow.show('sign-in');
+        }
+
+        // sign up
+        if (target.classList.contains('sign-up'))
+        {
+            this.signInWindow.show('sign-up');
         }
 
         // sign out

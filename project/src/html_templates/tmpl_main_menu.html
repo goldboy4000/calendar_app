@@ -31,9 +31,22 @@
                             <span class="sign-in">Sign In</span>
                         </a>
                     </p>
+                    <p class="nav-item">Or</p>
+                    <p class="control">
+                        <a class="button sign-up">
+                                <span class="icon sign-up">
+                                    <i class="fa fa-user-circle sign-up"></i>
+                                </span>
+                            <span class="sign-up">Sign Up</span>
+                        </a>
+                    </p>
                 <% } else { %>
                     <p class="control">
-                        <a class="nav-item is-tab"><%= user.displayName%></a>
+                        <% if (user.displayName) { %>
+                            <a class="nav-item is-tab"><%= user.displayName %></a>
+                        <% } else { %>
+                            <a class="nav-item is-tab"><%= user.email %></a>
+                        <% } %>
                     </p>
                     <p class="control">
                         <a class="button sign-out is-primary" >
